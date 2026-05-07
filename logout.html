@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sesión Finalizada - AFIP | Banco de Occidente</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1a2e5a;
+      --navy-light: #29abe2;
+      --blue-primary: #0072bc;
+      --blue-dark: #1a2e5a;
+      --text-primary: #1a2e5a;
+      --text-secondary: #4a6080;
+      --text-muted: #8099b0;
+      --bg-light: #f4f6f9;
+      --border: rgba(26, 46, 90, 0.1);
+      --gold: #e8a020;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Sora', sans-serif;
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+
+    body {
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background-color: #1a2e5a;
+    }
+
+    /* IMAGEN DE FONDO - Servicios bancarios / Profesional con laptop */
+    .bg-image {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: 0;
+    }
+
+    /* Overlay azul para legibilidad */
+    .bg-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(26, 46, 90, 0.85) 0%, rgba(0, 114, 188, 0.75) 50%, rgba(41, 171, 226, 0.65) 100%);
+      z-index: 1;
+    }
+
+    /* HEADER */
+    .header {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      padding: 8px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #ffffff;
+      border-bottom: 1px solid rgba(26, 46, 90, 0.08);
+      box-shadow: 0 2px 12px rgba(26, 46, 90, 0.08);
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+    }
+
+    .brand-logo-img {
+      height: 48px;
+      width: auto;
+      display: block;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(62, 207, 142, 0.1);
+      border: 1px solid rgba(62, 207, 142, 0.25);
+      padding: 5px 12px;
+      border-radius: 16px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #2a9d6c;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: #3ecf8e;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.8); }
+    }
+
+    /* MAIN CONTAINER */
+    .main {
+      flex: 1;
+      position: relative;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 32px;
+    }
+
+    .logout-card {
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 18px;
+      padding: 28px 36px 24px;
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 25px 70px rgba(11, 17, 32, 0.35);
+      animation: fadeUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .check-icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 14px;
+      background: linear-gradient(135deg, #0072bc 0%, #1a2e5a 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(0, 114, 188, 0.35);
+      animation: scaleIn 0.5s ease 0.2s both;
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .check-icon svg {
+      width: 26px;
+      height: 26px;
+      color: #fff;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      max-width: 420px;
+      margin: 0 auto 20px;
+    }
+
+    .subtitle strong {
+      color: var(--navy);
+      font-weight: 600;
+    }
+
+    /* SERVICIOS */
+    .services-section {
+      margin: 20px 0 18px;
+      padding: 18px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .services-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .service-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 8px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      background: transparent;
+      border: 1px solid transparent;
+    }
+
+    .service-item:hover {
+      background: rgba(0, 114, 188, 0.04);
+      border-color: rgba(0, 114, 188, 0.15);
+      transform: translateY(-3px);
+    }
+
+    .service-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f0f7fc 0%, #e1eef9 100%);
+      border: 1px solid rgba(0, 114, 188, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+    }
+
+    .service-item:hover .service-icon {
+      background: linear-gradient(135deg, #0072bc 0%, #1a2e5a 100%);
+      border-color: transparent;
+      box-shadow: 0 8px 20px rgba(0, 114, 188, 0.3);
+    }
+
+    .service-icon svg {
+      width: 22px;
+      height: 22px;
+      color: var(--blue-primary);
+      transition: color 0.25s ease;
+    }
+
+    .service-item:hover .service-icon svg {
+      color: #fff;
+    }
+
+    .service-name {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--navy);
+      line-height: 1.2;
+    }
+
+    .service-desc {
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    /* BUTTON */
+    .login-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #0072bc 0%, #1a2e5a 100%);
+      color: #fff;
+      font-family: 'Sora', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 11px 28px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 6px 16px rgba(0, 114, 188, 0.4);
+      text-decoration: none;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(0, 114, 188, 0.55);
+      background: linear-gradient(135deg, #0080d1 0%, #1f3568 100%);
+    }
+
+    .login-btn:active {
+      transform: translateY(0);
+    }
+
+    .login-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .timer-text {
+      margin-top: 14px;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .timer-text strong {
+      color: var(--blue-primary);
+      font-weight: 600;
+    }
+
+    /* FOOTER */
+    .footer {
+      position: relative;
+      z-index: 10;
+      padding: 18px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.85);
+      background: rgba(11, 17, 32, 0.35);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: #fff;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .header { padding: 12px 20px; }
+      .brand-logo-img { height: 60px; }
+      .header-right .status-chip { display: none; }
+      .main { padding: 20px 16px; }
+      .logout-card { padding: 36px 24px; }
+      .title { font-size: 26px; }
+      .subtitle { font-size: 13px; margin-bottom: 28px; }
+      .services-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .service-item {
+        flex-direction: row;
+        text-align: left;
+        padding: 14px 16px;
+        gap: 16px;
+        border: 1px solid var(--border);
+      }
+      .service-item > div:last-child {
+        text-align: left;
+        flex: 1;
+      }
+      .footer {
+        flex-direction: column;
+        gap: 10px;
+        padding: 16px 20px;
+        text-align: center;
+      }
+      .footer-links { flex-wrap: wrap; justify-content: center; gap: 14px; }
+    }
+
+    @media (max-width: 480px) {
+      .check-icon { width: 64px; height: 64px; }
+      .check-icon svg { width: 30px; height: 30px; }
+      .login-btn { width: 100%; justify-content: center; padding: 14px 24px; }
+      .brand-logo-img { height: 50px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- FONDO -->
+  <div class="bg-image"></div>
+  <div class="bg-overlay"></div>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="brand">
+      <img src="assets/img/logo-afip.png" alt="AFIP - Azul Financial Intelligence Platform | Banco de Occidente" class="brand-logo-img">
+    </div>
+    <div class="header-right">
+      <div class="status-chip">
+        <span class="status-dot"></span>
+        Sesión cerrada de forma segura
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="logout-card">
+
+      <!-- Icono de check -->
+      <div class="check-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+
+      <!-- Mensaje principal -->
+      <h1 class="title">¡Gracias por utilizar nuestros servicios!</h1>
+      <p class="subtitle">
+        Su sesión ha finalizado correctamente. Le agradecemos la confianza depositada en
+        <strong>AFIP - Banco de Occidente</strong>. Esperamos verle pronto de vuelta.
+      </p>
+
+      <!-- Servicios -->
+      <div class="services-section">
+        <div class="services-label">Otros servicios disponibles</div>
+        <div class="services-grid">
+
+          <!-- Banca Móvil Occired -->
+          <div class="service-item" onclick="window.open('https://www.bancodeoccidente.com.co', '_blank')">
+            <div class="service-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+            </div>
+            <div>
+              <div class="service-name">Banca Móvil</div>
+              <div class="service-desc">Occired</div>
+            </div>
+          </div>
+
+          <!-- Portal Bancario -->
+          <div class="service-item" onclick="window.open('https://www.bancodeoccidente.com.co', '_blank')">
+            <div class="service-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <div>
+              <div class="service-name">Portal Bancario</div>
+              <div class="service-desc">Web Personal</div>
+            </div>
+          </div>
+
+          <!-- Banca Empresas -->
+          <div class="service-item" onclick="window.open('https://www.bancodeoccidente.com.co', '_blank')">
+            <div class="service-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 21h18"></path>
+                <path d="M5 21V7l8-4v18"></path>
+                <path d="M19 21V11l-6-4"></path>
+                <line x1="9" y1="9" x2="9" y2="9.01"></line>
+                <line x1="9" y1="12" x2="9" y2="12.01"></line>
+                <line x1="9" y1="15" x2="9" y2="15.01"></line>
+                <line x1="9" y1="18" x2="9" y2="18.01"></line>
+              </svg>
+            </div>
+            <div>
+              <div class="service-name">Banca Empresas</div>
+              <div class="service-desc">Corporativo</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Botón de iniciar sesión -->
+      <a href="login.html" class="login-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+          <polyline points="10 17 15 12 10 7"></polyline>
+          <line x1="15" y1="12" x2="3" y2="12"></line>
+        </svg>
+        Iniciar Sesión
+      </a>
+
+      <!-- Timer redirección -->
+      <div class="timer-text">
+        Redirección automática en <strong id="timer">30</strong> segundos
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div>© 2024 Banco de Occidente S.A. | Institutional Banking Division</div>
+    <div class="footer-links">
+      <a href="#">Privacidad</a>
+      <a href="#">Seguridad</a>
+      <a href="#">Términos</a>
+      <a href="#">Soporte</a>
+    </div>
+  </footer>
+
+  <script>
+    // Timer de redirección automática
+    let seconds = 30;
+    const timerEl = document.getElementById('timer');
+    const interval = setInterval(() => {
+      seconds--;
+      if (timerEl) timerEl.textContent = seconds;
+      if (seconds <= 0) {
+        clearInterval(interval);
+        window.location.href = 'login.html';
+      }
+    }, 1000);
+
+    // Detener timer si el usuario interactúa con la página
+    document.addEventListener('click', () => {
+      clearInterval(interval);
+      const timerText = document.querySelector('.timer-text');
+      if (timerText) timerText.style.display = 'none';
+    });
+  </script>
+
+</body>
+</html>

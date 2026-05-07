@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AFIP — Banco de Occidente</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #1a2e5a;
+      --blue-primary: #0072bc;
+      --blue-light: #29abe2;
+      --gold: #e8a020;
+      --green: #3ecf8e;
+      --red: #e05252;
+      --text-primary: #1a2e5a;
+      --text-secondary: #4a6080;
+      --text-muted: #8099b0;
+      --border: rgba(26,46,90,0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Sora', sans-serif;
+      color: var(--text-primary);
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      background: #ffffff;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       PANEL IZQUIERDO - Imagen + mensaje promocional
+       ═══════════════════════════════════════════════════════ */
+    .left-panel {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      min-height: 100vh;
+      background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* Overlay sutil para legibilidad sin tapar la imagen */
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(26,46,90,0.20) 0%, rgba(0,114,188,0.10) 50%, rgba(0,0,0,0.05) 100%);
+      z-index: 1;
+    }
+
+    /* Decoración: chevron azul lateral */
+    .chevron-decor {
+      position: absolute;
+      top: 50%;
+      left: -40px;
+      transform: translateY(-50%);
+      width: 220px;
+      height: 220px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .chevron-decor svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.25));
+    }
+
+    /* Texto promocional */
+    .promo-text {
+      position: absolute;
+      bottom: 80px;
+      left: 80px;
+      right: 80px;
+      z-index: 3;
+      color: #ffffff;
+      max-width: 540px;
+    }
+
+    .promo-pretitle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .promo-pretitle::before {
+      content: '';
+      width: 0;
+      height: 0;
+      border-left: 10px solid #29abe2;
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+    }
+
+    .promo-title-1 {
+      font-size: 32px;
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 6px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+      color: #ffffff;
+    }
+
+    .promo-title-big {
+      font-size: 72px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 18px;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.45);
+      color: #ffffff;
+    }
+
+    .promo-desc {
+      font-size: 16px;
+      line-height: 1.5;
+      max-width: 460px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      padding-bottom: 14px;
+      border-bottom: 2px solid rgba(255,255,255,0.5);
+    }
+
+    .promo-desc strong {
+      font-weight: 700;
+    }
+
+    /* Sello "VIGILADO" lateral */
+    .vigilado-seal {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%) rotate(-90deg);
+      transform-origin: center;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      color: rgba(255,255,255,0.7);
+      z-index: 3;
+      white-space: nowrap;
+    }
+
+    /* Versión inferior derecha */
+    .version-tag {
+      position: absolute;
+      bottom: 24px;
+      right: 32px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.65);
+      font-family: 'DM Mono', monospace;
+      z-index: 3;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       PANEL DERECHO - Formulario
+       ═══════════════════════════════════════════════════════ */
+    .right-panel {
+      width: 460px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      padding: 28px 36px;
+      position: relative;
+      overflow-y: auto;
+      box-shadow: -8px 0 30px rgba(26,46,90,0.10);
+    }
+
+    /* Top right: chip de seguridad */
+    .security-chip {
+      align-self: flex-end;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(62,207,142,0.1);
+      border: 1px solid rgba(62,207,142,0.25);
+      padding: 5px 12px;
+      border-radius: 16px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #2a9d6c;
+      margin-bottom: 16px;
+    }
+
+    .security-chip svg {
+      width: 12px;
+      height: 12px;
+      color: #2a9d6c;
+    }
+
+    /* Logo AFIP centrado */
+    .logo-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .logo-img {
+      height: 64px;
+      width: auto;
+      display: block;
+    }
+
+    /* Bienvenida */
+    .welcome {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .welcome-greeting {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .welcome-portal {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--blue-primary);
+      letter-spacing: -0.02em;
+      margin-top: 2px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 18px;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.18s ease;
+      margin-bottom: -1px;
+    }
+
+    .tab.active {
+      color: var(--blue-primary);
+      border-bottom-color: var(--blue-primary);
+    }
+
+    .tab:hover:not(.active) {
+      color: var(--text-secondary);
+    }
+
+    /* Credenciales demo */
+    .cred-hint {
+      background: linear-gradient(135deg, rgba(0,114,188,0.06) 0%, rgba(26,46,90,0.04) 100%);
+      border: 1px solid rgba(0,114,188,0.18);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .cred-hint-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 8px;
+    }
+
+    .cred-hint-header svg {
+      color: var(--blue-primary);
+      flex-shrink: 0;
+    }
+
+    .cred-hint-header strong {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .cred-hint-tag {
+      margin-left: auto;
+      background: linear-gradient(135deg, var(--blue-primary) 0%, var(--navy) 100%);
+      color: #fff;
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .cred-hint-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .cred-hint-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cred-hint-label {
+      font-size: 9.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      width: 88px;
+      flex-shrink: 0;
+    }
+
+    .cred-hint code {
+      font-family: 'DM Mono', monospace;
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: var(--blue-primary);
+      font-weight: 500;
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      display: flex;
+    }
+
+    .form-input {
+      width: 100%;
+      font-family: 'Sora', sans-serif;
+      font-size: 13px;
+      color: var(--text-primary);
+      padding: 10px 14px 10px 36px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+      transition: all 0.18s ease;
+      background: #fff;
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-input:focus {
+      border-color: var(--blue-primary);
+      box-shadow: 0 0 0 3px rgba(0,114,188,0.12);
+    }
+
+    .form-input.error {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(224,82,82,0.1);
+    }
+
+    .toggle-pass {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      transition: color 0.18s;
+    }
+
+    .toggle-pass:hover {
+      color: var(--blue-primary);
+    }
+
+    /* Forgot password link */
+    .forgot-link {
+      text-align: right;
+      margin-bottom: 14px;
+    }
+
+    .forgot-link a {
+      font-size: 11.5px;
+      color: var(--blue-primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .forgot-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* Error message */
+    .error-msg {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: rgba(224,82,82,0.08);
+      border: 1px solid rgba(224,82,82,0.25);
+      color: var(--red);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
+    .error-msg.show {
+      display: flex;
+    }
+
+    /* Botones inferiores */
+    .button-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn-secondary-action {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 11px 14px;
+      background: #fff;
+      color: var(--blue-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Sora', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .btn-secondary-action:hover {
+      background: rgba(0,114,188,0.05);
+      border-color: var(--blue-primary);
+    }
+
+    .btn-secondary-action svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .btn-login {
+      flex: 1;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 14px;
+      background: linear-gradient(135deg, var(--blue-primary) 0%, var(--navy) 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Sora', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,114,188,0.35);
+      overflow: hidden;
+    }
+
+    .btn-login:hover:not(.loading) {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(0,114,188,0.45);
+    }
+
+    .btn-login svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .btn-login.loading .btn-text { opacity: 0; }
+    .btn-login.loading .spinner { opacity: 1; }
+
+    .btn-text { transition: opacity 0.2s; }
+
+    .spinner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .spinner-ring {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+        overflow-y: auto;
+      }
+
+      html, body {
+        overflow-y: auto;
+        height: auto;
+      }
+
+      .left-panel {
+        min-height: 220px;
+        max-height: 260px;
+      }
+
+      .promo-text {
+        bottom: 30px;
+        left: 30px;
+        right: 30px;
+      }
+
+      .promo-title-big { font-size: 38px; }
+      .promo-title-1 { font-size: 20px; }
+      .promo-desc { font-size: 13px; }
+      .vigilado-seal { display: none; }
+      .chevron-decor { width: 120px; height: 120px; left: -30px; }
+
+      .right-panel {
+        width: 100%;
+        padding: 22px 24px 32px;
+        box-shadow: none;
+      }
+
+      .logo-img { height: 54px; }
+    }
+
+    @media (max-width: 480px) {
+      .promo-title-big { font-size: 30px; }
+      .promo-title-1 { font-size: 16px; }
+      .promo-desc { font-size: 12px; }
+      .button-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ PANEL IZQUIERDO ═══ -->
+  <div class="left-panel">
+    <!-- Chevron decorativo -->
+    <div class="chevron-decor">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="0,15 30,15 60,50 30,85 0,85 30,50" fill="#29abe2"/>
+        <polygon points="40,15 70,15 100,50 70,85 40,85 70,50" fill="#0072bc"/>
+      </svg>
+    </div>
+
+    <!-- Sello vigilado -->
+    <div class="vigilado-seal">VIGILADO · SUPERINTENDENCIA FINANCIERA DE COLOMBIA</div>
+
+    <!-- Texto promocional -->
+    <div class="promo-text">
+      <div class="promo-pretitle">Estamos contigo</div>
+      <div class="promo-title-1">donde estés</div>
+      <div class="promo-title-big">Conéctate</div>
+      <div class="promo-desc">
+        Conoce todas las nuevas <strong>funciones</strong> de nuestro Portal Corporativo AFIP.
+      </div>
+    </div>
+
+    <!-- Versión -->
+    <div class="version-tag">v.1.0.0 · AFIP</div>
+  </div>
+
+  <!-- ═══ PANEL DERECHO ═══ -->
+  <div class="right-panel">
+
+    <!-- Chip seguridad -->
+    <div class="security-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      </svg>
+      Online
+    </div>
+
+    <!-- Logo AFIP -->
+    <div class="logo-block">
+      <img src="assets/img/logo-afip.png" alt="AFIP - Azul Financial Intelligence Platform | Banco de Occidente" class="logo-img">
+    </div>
+
+    <!-- Bienvenida -->
+    <div class="welcome">
+      <div class="welcome-greeting">¡Bienvenido(a) al</div>
+      <div class="welcome-portal">Portal Corporativo</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active">Ingreso Usuario</div>
+    </div>
+
+    <!-- Credenciales demo -->
+    <div class="cred-hint">
+      <div class="cred-hint-header">
+        <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd"/>
+        </svg>
+        <strong>Credenciales de prueba</strong>
+        <span class="cred-hint-tag">DEMO MVP</span>
+      </div>
+      <div class="cred-hint-rows">
+        <div class="cred-hint-row">
+          <span class="cred-hint-label">Usuario</span>
+          <code>hector.ruiz</code>
+        </div>
+        <div class="cred-hint-row">
+          <span class="cred-hint-label">Contraseña</span>
+          <code>bancobdo2026</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje de error -->
+    <div class="error-msg" id="error-msg">
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+      </svg>
+      <span id="error-text">Usuario o contraseña incorrectos.</span>
+    </div>
+
+    <!-- Form -->
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label class="form-label" for="username">Usuario</label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/></svg>
+          </span>
+          <input class="form-input" id="username" type="text" placeholder="Ingrese su usuario" autocomplete="username" spellcheck="false">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Contraseña</label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"/></svg>
+          </span>
+          <input class="form-input" id="password" type="password" placeholder="Ingrese su contraseña" autocomplete="current-password">
+          <span class="toggle-pass" id="toggle-pass" onclick="togglePassword()">
+            <svg id="eye-icon" width="15" height="15" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+              <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <div class="forgot-link">
+        <a onclick="alert('Recuperación de contraseña: contacte soporte@bancobdo.com')">¿Olvidaste tu contraseña?</a>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-login" type="submit" id="btn-login">
+          <span class="btn-text">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:-2px">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+              <polyline points="10 17 15 12 10 7"></polyline>
+              <line x1="15" y1="12" x2="3" y2="12"></line>
+            </svg>
+            Ingresar
+          </span>
+          <span class="spinner"><span class="spinner-ring"></span></span>
+        </button>
+      </div>
+    </form>
+
+  </div>
+
+  <script>
+    // ── CREDENCIALES HARDCODEADAS (MVP) ──────────────────────
+    const USERS = [
+      {
+        username: 'hector.ruiz',
+        password: 'bancobdo2026',
+        displayName: 'Hector Ruiz',
+        role: 'Director de Proyectos'
+      }
+    ];
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const btn      = document.getElementById('btn-login');
+      const errorDiv = document.getElementById('error-msg');
+      const errorTxt = document.getElementById('error-text');
+
+      // Clear errors
+      errorDiv.classList.remove('show');
+      document.getElementById('username').classList.remove('error');
+      document.getElementById('password').classList.remove('error');
+
+      // Validation
+      if (!username || !password) {
+        errorTxt.textContent = 'Por favor complete todos los campos.';
+        errorDiv.classList.add('show');
+        if (!username) document.getElementById('username').classList.add('error');
+        if (!password) document.getElementById('password').classList.add('error');
+        return;
+      }
+
+      // Loading state
+      btn.classList.add('loading');
+
+      setTimeout(() => {
+        const user = USERS.find(u => u.username === username && u.password === password);
+
+        if (user) {
+          sessionStorage.setItem('bdo_user', JSON.stringify(user));
+          window.location.href = 'index.html';
+        } else {
+          btn.classList.remove('loading');
+          errorTxt.textContent = 'Usuario o contraseña incorrectos.';
+          errorDiv.classList.add('show');
+          document.getElementById('username').classList.add('error');
+          document.getElementById('password').classList.add('error');
+
+          // Shake animation
+          const panel = document.querySelector('.right-panel');
+          panel.style.animation = 'shake 0.4s ease';
+          panel.addEventListener('animationend', () => {
+            panel.style.animation = '';
+          }, { once: true });
+        }
+      }, 900);
+    }
+
+    function togglePassword() {
+      const input = document.getElementById('password');
+      const icon  = document.getElementById('eye-icon');
+      const isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      icon.innerHTML = isHidden
+        ? `<path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd"/><path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z"/>`
+        : `<path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>`;
+    }
+
+    // Shake keyframe
+    const style = document.createElement('style');
+    style.textContent = `@keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-6px); }
+      40%      { transform: translateX(6px); }
+      60%      { transform: translateX(-4px); }
+      80%      { transform: translateX(4px); }
+    }`;
+    document.head.appendChild(style);
+
+    // Enter key on any field submits
+    document.getElementById('username').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('password').focus(); });
+    document.getElementById('password').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-form').requestSubmit(); });
+  </script>
+
+</body>
+</html>

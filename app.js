@@ -1838,6 +1838,17 @@ function buildCSV(data) {
 
 // ── Función central de exportación ──────────────────────────
 function exportFormat(format) {
+  if (format === 'pdf') {
+    const link = document.createElement('a');
+    link.href = 'extractos.pdf';
+    link.download = 'extractos.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Descargando extractos.pdf', '📥');
+    return;
+  }
+
   const data = getFilteredExportData();
   if (!data) return;
   if (data.length === 0) {
